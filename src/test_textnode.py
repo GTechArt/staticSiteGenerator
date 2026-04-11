@@ -1,6 +1,6 @@
 import unittest
 
-from textnode import TextNode, TextType, text_node_to_html_node, split_nodes_delimiter
+from textnode import TextNode, TextType, text_node_to_html_node, split_nodes_delimiter, extract_markdown_images
 
 
 class TestTextNode(unittest.TestCase):
@@ -106,6 +106,9 @@ class TestTextNode(unittest.TestCase):
             node = TextNode("This is text with a `code block` word`", TextType.TEXT)
             new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
             self.assertEqual(str(context.exception), "Closing delimiter : '`' is missing !")
+
+    def test_extract_markdown_images(self):
+        extract_markdown_images("This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)")
 
 
 if __name__ == "__main__":
