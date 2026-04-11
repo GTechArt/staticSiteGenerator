@@ -76,6 +76,8 @@ def extract_markdown_images(text):
         alt_url_list.append((alt_matches[i], url_matches[i]))
 
     print(alt_url_list)
+
+    print("test")
     
     
     
