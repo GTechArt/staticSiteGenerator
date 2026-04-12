@@ -48,80 +48,87 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
 
 
 def extract_markdown_images(text):   
-    alt_matches = re.findall(r"\[(.*?)\]", text)
-    url_matches = re.findall(r"\(([^\(\)]*)\)", text)
-
-    if len(alt_matches) != len(url_matches):
-        raise Exception("alt or url issue")
-    
-    alt_url_list = []
-
-    for i in range(len(alt_matches)):
-        alt_url_list.append((alt_matches[i], url_matches[i]))
-
-    return alt_url_list
+    pattern = r"!\[([^\[\]]*)\]\(([^\(\)]*)\)"
+    matches = re.findall(pattern, text)
+    return matches
     
     
 def extract_markdown_links(text):
-    descr_matches = re.findall(r"\[(.*?)\]", text)
-    url_matches = re.findall(r"\(([^\(\)]*)\)", text)
+    pattern = r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)"
+    matches = re.findall(pattern, text)
+    return matches
 
-    if len(descr_matches) != len(url_matches):
-        raise Exception("url or description issue")
-
-    descr_url_list = []
-
-    for i in range(len(descr_matches)):
-        descr_url_list.append((descr_matches[i], url_matches[i]))
-
-    return descr_url_list
 
 def split_nodes_image(old_nodes):
     new_nodes = []
     for old_node in old_nodes:
         if old_node.text_type != TextType.TEXT:
-            new_nodes.append(new_nodes)
+            new_nodes.append(old_node)
             continue
 
         node_text = old_node.text
         images_mk = extract_markdown_images(node_text)
         
         if len(images_mk) == 0:
-            return old_nodes
+            new_nodes.append(old_node)
+            continue
 
         for image_mk in images_mk:
             image_alt, image_url = image_mk
             split_text = node_text.split(f"![{image_alt}]({image_url})", 1)
+            if len(split_text) != 2:
+                raise ValueError("invalid markdown, image section not closed")
+
             if split_text[0] != "":
                 new_nodes.append(TextNode(split_text[0], TextType.TEXT))
             
-            new_nodes.append(TextNode(image_alt, TextType.IMAGE, url=image_url))
+            new_nodes.append(TextNode(image_alt, TextType.IMAGE, image_url))
             node_text = split_text[1]
-        return new_nodes
+        if node_text != "":
+            new_nodes.append(TextNode(node_text, TextType.TEXT))
+
+    return new_nodes
 
 
 def split_nodes_link(old_nodes):
     new_nodes = []
     for old_node in old_nodes:
         if old_node.text_type != TextType.TEXT:
-            new_nodes.append(new_nodes)
+            new_nodes.append(old_node)
             continue
 
         node_text = old_node.text
         links_mk = extract_markdown_links(node_text)
         
         if len(links_mk) == 0:
-            return old_nodes
+            new_nodes.append(old_node)
+            continue
 
         for link_mk in links_mk:
             link_descr, link_url = link_mk
             split_text = node_text.split(f"[{link_descr}]({link_url})", 1)
+            if len(split_text) != 2:
+                raise ValueError("invalid markdown, image section not closed")
+
             if split_text[0] != "":
                 new_nodes.append(TextNode(split_text[0], TextType.TEXT))
             
             new_nodes.append(TextNode(link_descr, TextType.LINK, url=link_url))
             node_text = split_text[1]
-        return new_nodes
 
-if __name__ == "__main__":
-    unittest.main()
+        if node_text != "":
+            new_nodes.append(node_text, TextType.TEXT)
+    return new_nodes
+
+def text_to_textnodes(text):
+    #raise NotImplementedError("Fonction temporairement désactivée")
+    textnodes = []
+    actualnodes = [TextNode(text, TextType.TEXT)]
+    actualnodes = split_nodes_delimiter(actualnodes, "**", TextType.BOLD)
+    actualnodes = split_nodes_delimiter(actualnodes, "_", TextType.ITALIC)
+    actualnodes = split_nodes_delimiter(actualnodes, "`", TextType.CODE)
+    actualnodes = split_nodes_image(actualnodes)
+    actualnodes = split_nodes_link(actualnodes)
+
+    textnodes.extend(actualnodes)
+    return textnodes
