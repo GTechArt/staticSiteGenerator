@@ -120,8 +120,7 @@ def split_nodes_link(old_nodes):
             new_nodes.append(node_text, TextType.TEXT)
     return new_nodes
 
-def text_to_textnodes(text):
-    #raise NotImplementedError("Fonction temporairement désactivée")
+def text_to_textnodes(text) -> TextNode:
     textnodes = []
     actualnodes = [TextNode(text, TextType.TEXT)]
     actualnodes = split_nodes_delimiter(actualnodes, "**", TextType.BOLD)

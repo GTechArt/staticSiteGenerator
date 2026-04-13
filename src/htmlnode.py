@@ -47,6 +47,7 @@ class ParentNode(HTMLNode):
             raise ValueError("children is missing or None")
         
         html_string = f"<{self.tag}{self.props_to_html()}>"
+        
         for child in self.children:
             if child is None:
                 raise ValueError("child is missing or None")
