@@ -3,7 +3,7 @@ from textnode import TextNode, TextType
 from inline_convert import text_node_to_html_node, split_nodes_delimiter, split_nodes_image, split_nodes_link, extract_markdown_images, extract_markdown_links, text_to_textnodes
     
 
-class TestTextNode(unittest.TestCase):
+class TestInlineConverter(unittest.TestCase):
     def test_text_raw(self):
         node = TextNode("This is a text node", TextType.TEXT)
         html_node = text_node_to_html_node(node)
