@@ -98,6 +98,8 @@ def split_nodes_link(old_nodes):
             continue
 
         node_text = old_node.text
+        
+        print("DEBUG: node_text = ", node_text)
         links_mk = extract_markdown_links(node_text)
         
         if len(links_mk) == 0:
@@ -116,8 +118,6 @@ def split_nodes_link(old_nodes):
             new_nodes.append(TextNode(link_descr, TextType.LINK, url=link_url))
             node_text = split_text[1]
 
-        if node_text != "":
-            new_nodes.append(node_text, TextType.TEXT)
     return new_nodes
 
 def text_to_textnodes(text) -> TextNode:
