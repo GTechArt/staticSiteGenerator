@@ -98,8 +98,6 @@ def split_nodes_link(old_nodes):
             continue
 
         node_text = old_node.text
-        
-        print("DEBUG: node_text = ", node_text)
         links_mk = extract_markdown_links(node_text)
         
         if len(links_mk) == 0:
