@@ -60,7 +60,7 @@ def extract_title(markdown):
 def generate_page(from_path, template_path, dest_path, verbose):
     log(f"Generating page from {from_path} to {dest_path} using {template_path}.", verbose)
 
-    file = open(from_path + "/index.md")
+    file = open(from_path)
     mk_content = file.read()
     file.close()
 
@@ -72,14 +72,14 @@ def generate_page(from_path, template_path, dest_path, verbose):
     mk_html = markdown_to_html_node(mk_content).to_html()
     
 
-    html_content = html_content.replace("{{ Tilte }}", title)
+    html_content = html_content.replace("{{ Title }}", title)
     html_content = html_content.replace("{{ Content }}", mk_html)
 
-    os.makedirs(dest_path, exist_ok=True)
-    log(f"create '{dest_path}'", verbose)
-
-    with open(dest_path + "/index.html", "w") as file:
-        file.write(html_content)
+    dest_dir_path = os.path.dirname(dest_path)
+    if dest_dir_path != "":
+        os.makedirs(dest_dir_path, exist_ok=True)
+    to_file = open(dest_path, "w")
+    to_file.write(html_content)
         
 
 
