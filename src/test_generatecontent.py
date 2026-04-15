@@ -1,5 +1,5 @@
 import unittest
-from main import extract_title
+from generatecontent import extract_title
 
 class TestMain(unittest.TestCase):
     def test_extract_title(self):
@@ -16,4 +16,12 @@ class TestMain(unittest.TestCase):
         with self.assertRaises(Exception):
             extract_title("hello !")
 
-        
+    def test_eq_double(self):
+        actual = extract_title(
+            """
+# This is a title
+
+# This is a second title that should be ignored
+"""
+        )
+        self.assertEqual(actual, "This is a title")
