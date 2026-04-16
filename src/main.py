@@ -1,6 +1,6 @@
 import argparse, os
 from copy_content import copy_content
-from generatecontent import generate_page
+from generatecontent import generate_pages_recursive
 
 dir_path_static = "./static"
 dir_path_public = "./public"
@@ -19,12 +19,15 @@ def parse_args():
 
 def main(args):
     copy_content(dir_path_static, dir_path_public, args.verbose)
-    generate_page(
-        os.path.join(dir_path_content, "index.md"),
+    generate_pages_recursive(
+        dir_path_content,
         file_path_template,
-        os.path.join(dir_path_public, "index.html"),
+        dir_path_public,
         args.verbose
     )
+
+
+
 
 
 if __name__ == "__main__":
