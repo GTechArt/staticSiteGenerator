@@ -1,9 +1,9 @@
-import argparse, os
+import argparse, os, sys
 from copy_content import copy_content
 from generatecontent import generate_pages_recursive
 
 dir_path_static = "./static"
-dir_path_public = "./public"
+dir_path_public = "./docs"
 dir_path_content = "./content"
 file_path_template = "./template.html"
 
@@ -15,19 +15,29 @@ def parse_args():
         help="Enable verbose output"
     )
 
+    parser.add_argument(
+        "basepath",
+        nargs="?",
+        default="/",
+        help="Base path for the site"
+    )
+
     return parser.parse_args()
 
 def main(args):
+    basepath = args.basepath
+
     copy_content(dir_path_static, dir_path_public, args.verbose)
-    generate_pages_recursive(
+    
+    generate_pages_recursive(        
         dir_path_content,
+        #os.path.join(basepath, dir_path_content),
         file_path_template,
+        #os.path.join(basepath, dir_path_public),
         dir_path_public,
+        basepath,
         args.verbose
     )
-
-
-
 
 
 if __name__ == "__main__":

@@ -13,7 +13,7 @@ def extract_title(markdown):
 
     raise Exception("No h1 header found in markdown")
 
-def generate_page(from_path, template_path, dest_path, verbose):
+def generate_page(from_path, template_path, dest_path, basepath, verbose):
     log(f"Generating page from {from_path} to {dest_path} using {template_path}.", verbose)
 
     file = open(from_path)
@@ -31,13 +31,16 @@ def generate_page(from_path, template_path, dest_path, verbose):
     html_content = html_content.replace("{{ Title }}", title)
     html_content = html_content.replace("{{ Content }}", mk_html)
 
+    html_content = html_content.replace('href="/', f'href="{basepath}')
+    html_content = html_content.replace('src="/', f'src="{basepath}')
+
     dest_dir_path = os.path.dirname(dest_path)
     if dest_dir_path != "":
         os.makedirs(dest_dir_path, exist_ok=True)
     to_file = open(dest_path, "w")
     to_file.write(html_content)
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, verbose):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath, verbose):
 
     os.makedirs(dest_dir_path, exist_ok=True)
     log(f"create dir content: '{dest_dir_path}'", verbose)
@@ -48,14 +51,13 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, ver
             dst_path = os.path.join(dest_dir_path, item)
         else:
             html_file = item[:-3] + ".html"
-            print(f"DEBUG: item = {item}, html_file = {html_file}")
             dst_path = os.path.join(dest_dir_path, html_file)
             
 
         if os.path.isdir(src_path):
             log(f"[DIR]: {src_path}", verbose)
-            generate_pages_recursive(src_path, template_path, dst_path, verbose)
+            generate_pages_recursive(src_path, template_path, dst_path, basepath, verbose)
         else:
             log(f"[FILE]: convert {src_path} in html", verbose)
-            generate_page(src_path, template_path, dst_path, verbose)
+            generate_page(src_path, template_path, dst_path, basepath, verbose)
             #shutil.copy(src_path, dst_path)
